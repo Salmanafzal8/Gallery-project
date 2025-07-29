@@ -28,6 +28,7 @@ export default function Login() {
     }
   }, [router]);
 
+
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -69,7 +70,7 @@ export default function Login() {
         paddingLeft: "500px",
         height: "100vh",
         backgroundColor: "white",
-        backgroundImage: 'url("/signupbaclgroundimage.jpg")',
+        backgroundImage: 'url("/signupbackgroundimage.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -112,6 +113,7 @@ export default function Login() {
                 <IconButton onClick={() => setShowPassword((prev) => !prev)}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
+
               </InputAdornment>
             ),
           }}
@@ -131,16 +133,23 @@ export default function Login() {
             {error}
           </Typography>
         )}
-        <Box sx={{display: "flex" , justifyContent: "center" , gap: "10px" , alignItems: "center", marginTop: "90px" ,}} >
-        <Typography >Dont have account?</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-
-          onClick={() => router.push("/signup")}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "10px",
+            alignItems: "center",
+            marginTop: "100px",
+          }}
         >
-          Sign Up
-        </Button>
+          <Typography>Dont have account?</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => router.push("/signup")}
+          >
+            Sign Up
+          </Button>
         </Box>
       </Box>
     </Box>

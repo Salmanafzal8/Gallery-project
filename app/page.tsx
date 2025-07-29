@@ -1,87 +1,80 @@
 "use client";
-import { TextField, Box, Button, Typography, Input } from "@mui/material";
-import React, { useState } from "react";
-import axios from "axios";
 
-export default function Home() {
-  const [caption, setcaption] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [message, setMessage] = useState("");
+import { Box, Button, Typography } from "@mui/material";
+import React from "react";
+import { useRouter } from "next/navigation";
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!image || !caption) {
-      setMessage("Image and caption is required");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("caption", caption);
-
-    try {
-      const token = localStorage.getItem("authToken");
-      const response = await axios.post(
-        "http://localhost:8080/api/photos",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setMessage("Image Uploaded Successfull");
-      setcaption("");
-      setImage(null);
-    } catch (error) {
-      console.error("Upload error:", error);
-      setMessage("Uplaod failed. Please try again");
-    }
-  };
+export default function HomePage() {
+  const router = useRouter();
 
   return (
-    <>
-      <Box
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        backgroundImage: 'url("/signupbackgroundimage.jpg")', // ✅ Correct path
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        height: "100vh",
+        textAlign: "center",
+        px: 2,
+      }}
+    >
+      <Typography
+        variant="h3"
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
+          color: "white",
+          fontWeight: "bold",
+          mb: 3,
+          textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
         }}
       >
-        <Typography variant="h4">
-          {" "}
-          PLease upload you image with caption
-        </Typography>
-        <Input
-          type="file"
-          onChange={handleInputChange}
-          inputProps={{ accept: "image/*" }}
-        />
-        <TextField
-          label="Caption"
-          variant="outlined"
-          value={caption}
-          onChange={(e) => e.target.value}
-        />
-        <Button variant="contained" onClick={handleSubmit}>
-          Upload
+        Welcome to the Next.js Image Uploader
+      </Typography>
+
+      <Box
+        sx={{
+          width: { xs: 150, sm: 200, md: 250 },
+          height: { xs: 150, sm: 200, md: 250 },
+          backgroundImage: 'url("/next.svg")',
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          mb: 3,
+        }}
+      />
+
+      <Typography
+        variant="h6"
+        sx={{
+          color: "white",
+          mb: 3,
+          textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
+        }}
+      >
+        Register to upload and manage your images
+      </Typography>
+
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => router.push("/login")}
+        >
+          Login
         </Button>
-        {message && (
-          <Typography variant="body1" color="secondary">
-            {message}
-          </Typography>
-        )}
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => router.push("/signup")}
+        >
+          Sign Up
+        </Button>
       </Box>
-    </>
+    </Box>
   );
 }

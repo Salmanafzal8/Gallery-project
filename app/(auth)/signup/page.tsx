@@ -61,7 +61,7 @@ export default function Signup() {
         gap: 2,
         alignItems: "end",
         paddingRight: "400px",
-        backgroundImage: 'url("/signupbaclgroundimage.jpg")',
+        backgroundImage: 'url("/signupbackgroundimage.jpg")',
         backgroundSize: "cover", 
         backgroundPosition: "center", 
         backgroundRepeat: "no-repeat", 
