@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // ✅ App Router
 
 export default function Login() {
   const [username, setusername] = useState("");
@@ -24,28 +24,20 @@ export default function Login() {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      router.push("/");
+      router.push("/home"); // ✅ Change to your protected route
     }
-  }, []);
+  }, [router]);
 
-  const handleLogin = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ): Promise<void> => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
-      const payload = { username, password };
-      const config = {
-        headers: { "Content-Type": "application/json" },
-      };
-
       const response = await axios.post(
         "http://localhost:8080/api/login",
-        payload,
-        config
+        { username, password },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
       );
-
-      console.log("Login Response:", response);
 
       const { token, message } = response.data;
 
@@ -54,12 +46,12 @@ export default function Login() {
         setError("");
         setusername("");
         setPassword("");
-        router.push("/")
+        router.push("/home"); // ✅ Redirect to protected/home page
       } else {
         setError(message || "Login failed. Try again.");
       }
-    } catch (error) {
-      console.error("Login Error:", error);
+    } catch (err) {
+      console.error("Login Error:", err);
       setError("Login error. Please try again later.");
     }
   };
@@ -67,63 +59,89 @@ export default function Login() {
   return (
     <Box
       component={"form"}
-      // onSubmit={handleSubmit}
+      onSubmit={handleLogin} // ✅ Form submission
       sx={{
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
         gap: 2,
         alignItems: "center",
+        paddingLeft: "500px",
         height: "100vh",
         backgroundColor: "white",
+        backgroundImage: 'url("/signupbaclgroundimage.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
-      <Typography
-        variant="h3"
-        component="h2"
-        sx={{ fontSize: "50px", fontWeight: "bold" }}
-      >
-        LOGIN
-      </Typography>{" "}
-      <TextField
-        id="outlined-basic"
-        label="Username"
-        variant="outlined"
-        onChange={(e) => setusername(e.target.value)}
-      />
-      <TextField
-        id="Password"
-        label="Password"
-        variant="outlined"
-        onChange={(e) => setPassword(e.target.value)}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                onClick={() => setShowPassword((prev) => !prev)}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
+      <Box
+        sx={{
+          // border: " 1px solid black ",
+          display: "flex",
+          flexDirection: "column",
+          padding: "100px",
+          height: "60vh",
+          gap: "20px",
+          borderRadius: "20px",
+          // boxShadow: "5px 5px 5px 5px lightgray",
+          backgroundColor: "Gainsboro",
         }}
-        sx={{ width: "220px" }}
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleLogin}
-        sx={{ marginLeft: "130px" }}
       >
-        Login
-      </Button>
-      <Box>
+        <Typography variant="h3" component="h2" sx={{ fontWeight: "bold" }}>
+          LOGIN
+        </Typography>
+
+        <TextField
+          label="Username"
+          variant="outlined"
+          value={username}
+          onChange={(e) => setusername(e.target.value)}
+          required
+        />
+
+        <TextField
+          label="Password"
+          variant="outlined"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type={showPassword ? "text" : "password"}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword((prev) => !prev)}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          required
+        />
+
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          sx={{ marginTop: 1 }}
+        >
+          Login
+        </Button>
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
             {error}
           </Typography>
         )}
+        <Box sx={{display: "flex" , justifyContent: "center" , gap: "10px" , alignItems: "center", marginTop: "90px" ,}} >
+        <Typography >Dont have account?</Typography>
+        <Button
+          variant="contained"
+          color="primary"
+
+          onClick={() => router.push("/signup")}
+        >
+          Sign Up
+        </Button>
+        </Box>
       </Box>
     </Box>
   );

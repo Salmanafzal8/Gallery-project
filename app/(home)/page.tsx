@@ -1,5 +1,8 @@
 "use client";
 import { TextField, Box, Button, Typography, Input } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUploadIcon";
+import VisuallyHiddenInput from "@mui/icons-material/VisuallyHiddenInput";
+
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -62,11 +65,20 @@ export default function Home() {
           {" "}
           PLease upload you image with caption
         </Typography>
-        <Input
-          type="file"
-          onChange={handleInputChange}
-          inputProps={{ accept: "image/*" }}
-        />
+<Button
+  component="label"
+  role={undefined}
+  variant="contained"
+  tabIndex={-1}
+  startIcon={<CloudUploadIcon />}
+>
+  Upload Photo
+  <VisuallyHiddenInput
+    type="file"
+    onChange={handleInputChange}
+    multiple
+  />
+</Button>
         <TextField
           label="Caption"
           variant="outlined"
