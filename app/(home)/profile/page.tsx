@@ -113,14 +113,11 @@ export default function Home() {
           <Button variant="contained" onClick={handleLogout}>
             Logout
           </Button>
-          <Button variant="contained" onClick={() => router.push("/profile")}>
-            Profile
+          <Button variant="contained" onClick={() => router.push("/home")}>
+            HOME
           </Button>
         </Box>
-                  <Typography variant="h3" color="primary" >Home page</Typography>
 
-
-        📝 Upload section
         <Box
           sx={{
             backgroundColor: "white",
@@ -134,7 +131,7 @@ export default function Home() {
             maxWidth: "500px",
           }}
         >
-          <Typography variant="h5">Upload a photo with caption</Typography>
+          <Typography variant="h5" >Upload a photo with caption</Typography>
 
           {/* 📷 Image upload button */}
           <Button
@@ -176,9 +173,6 @@ export default function Home() {
             </Typography>
           )}
         </Box>
-
-
-
 
         {/* 🧾 All uploaded posts */}
         <Box

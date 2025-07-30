@@ -14,7 +14,7 @@ export default function HomePage() {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        backgroundImage: 'url("/signupbackgroundimage.jpg")', // ✅ Correct path
+        backgroundImage: 'url("/signupbackgroundimage.jpg")', 
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -59,6 +59,13 @@ export default function HomePage() {
       </Typography>
 
       <Box sx={{ display: "flex", gap: 2 }}>
+                <Button
+          variant="contained"
+          color="primary"
+          onClick={() => router.push("/signup")}
+        >
+          Sign Up
+        </Button>
         <Button
           variant="contained"
           color="secondary"
@@ -67,13 +74,7 @@ export default function HomePage() {
           Login
         </Button>
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => router.push("/signup")}
-        >
-          Sign Up
-        </Button>
+
       </Box>
     </Box>
   );

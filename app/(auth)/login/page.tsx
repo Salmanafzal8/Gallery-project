@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useRouter } from "next/navigation"; // ✅ App Router
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [username, setusername] = useState("");
@@ -24,13 +24,13 @@ export default function Login() {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      router.push("/home"); // ✅ Change to your protected route
+      router.push("/home");
     }
   }, [router]);
 
-
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     try {
       const response = await axios.post(
         "http://localhost:8080/api/login",
@@ -40,6 +40,8 @@ export default function Login() {
         }
       );
 
+      console.log("✅ Login API Response:", response.data);
+
       const { token, message } = response.data;
 
       if (token) {
@@ -47,20 +49,29 @@ export default function Login() {
         setError("");
         setusername("");
         setPassword("");
-        router.push("/home"); // ✅ Redirect to protected/home page
+        router.push("/home");
       } else {
         setError(message || "Login failed. Try again.");
       }
-    } catch (err) {
-      console.error("Login Error:", err);
-      setError("Login error. Please try again later.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("❌ Axios Error:", err.response?.data || err.message);
+        setError(
+          err.response?.data?.message || "Login failed. Please try again."
+        );
+      } else if (err instanceof Error) {
+        console.error("❌ General Error:", err.message);
+        setError("Login error. Please try again later.");
+      } else {
+        console.error("❌ Unknown Error:", err);
+        setError("An unknown error occurred.");
+      }
     }
   };
-
   return (
     <Box
-      component={"form"}
-      onSubmit={handleLogin} // ✅ Form submission
+      component="form"
+      onSubmit={handleLogin}
       sx={{
         display: "flex",
         justifyContent: "center",
@@ -78,14 +89,12 @@ export default function Login() {
     >
       <Box
         sx={{
-          // border: " 1px solid black ",
           display: "flex",
           flexDirection: "column",
           padding: "100px",
           height: "60vh",
           gap: "20px",
           borderRadius: "20px",
-          // boxShadow: "5px 5px 5px 5px lightgray",
           backgroundColor: "Gainsboro",
         }}
       >
@@ -113,7 +122,6 @@ export default function Login() {
                 <IconButton onClick={() => setShowPassword((prev) => !prev)}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
-
               </InputAdornment>
             ),
           }}
@@ -128,11 +136,13 @@ export default function Login() {
         >
           Login
         </Button>
+
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
             {error}
           </Typography>
         )}
+
         <Box
           sx={{
             display: "flex",
@@ -142,7 +152,7 @@ export default function Login() {
             marginTop: "100px",
           }}
         >
-          <Typography>Dont have account?</Typography>
+          <Typography>Dont have an account?</Typography>
           <Button
             variant="contained"
             color="primary"
