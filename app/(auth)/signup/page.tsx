@@ -1,165 +1,159 @@
 "use client";
-import { TextField, Box, Button, Typography } from "@mui/material";
+import { TextField, Box, Button, Typography, InputAdornment, IconButton } from "@mui/material";
 import React, { useState } from "react";
 import axios from "axios";
-import { IconButton, InputAdornment } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [bio, setBio] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
   const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/register",
-        {
-          username,
-          password,
-          bio,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        `${process.env.NEXT_PUBLIC_BASE_URL}/register`,
+        { username, password, bio },
+        { headers: { "Content-Type": "application/json" } }
       );
-      console.log("Data being sent:", { username, password, bio });
+
       if (response.data.success) {
-        const token = response.data.token;
-        if (token) {
-          localStorage.setItem("authToken", token);
-        }
-        setSuccess("Signup is sucessfull! You can now log in.");
+        localStorage.setItem("authToken", response.data.token);
+        toast.success("Signup successful! Redirecting to login...");
         setUsername("");
         setPassword("");
         setBio("");
+
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
       } else {
-        setError(response.data.message || "Signup failed. Please try again ");
+        toast.error(response.data.message || "Signup failed.");
       }
     } catch (err) {
-      setError("An error occured during signup. Please try again later");
+      toast.error("An error occurred during signup.");
       console.error(err);
     }
   };
+
   return (
     <Box
-      component={"form"}
+      component="form"
       sx={{
         display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        alignItems: "center",
         justifyContent: "center",
-        flexDirection: "column",
-        gap: 2,
-        alignItems: "end",
-        paddingRight: "400px",
-        backgroundImage: 'url("/signupbackgroundimage.jpg")',
-        backgroundSize: "cover", 
-        backgroundPosition: "center", 
-        backgroundRepeat: "no-repeat", 
-        height: "100vh", 
+        minHeight: "100vh",
+        backgroundImage: 'url("/backgroundimage.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        px: 2,
       }}
     >
+      {/* Logo */}
       <Box
         sx={{
-          // border: " 1px solid black ",
+          width: { xs: 200, md: 400 },
+          height: { xs: 200, md: 400 },
+          backgroundImage: 'url("/PROJECTLOGO.svg")',
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "contain",
+          mb: { xs: 4, md: 0 },
+        }}
+      />
+
+      {/* Signup Form */}
+      <Box
+        sx={{
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          padding: { xs: 4, md: 6 },
+          borderRadius: 4,
+          boxShadow: 4,
+          width: { xs: "90%", sm: "400px" },
           display: "flex",
           flexDirection: "column",
-          padding: "100px",
-          gap: "20px",
-          borderRadius: "20px",
-          // boxShadow: "5px 5px 5px 5px lightgray",
-          backgroundColor: "Gainsboro",
+          gap: 3,
         }}
       >
-        <Typography
-          variant="h3"
-          component="h2"
-          sx={{ fontSize: "50px", fontWeight: "bold" }}
-        >
-          SIGN UP
-        </Typography>{" "}
+        <Typography variant="h4" align="center" fontWeight="bold">
+          Sign Up
+        </Typography>
+
         <TextField
-          id="outlined-basic"
           label="Username"
           variant="outlined"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          fullWidth
+          required
         />
+
         <TextField
-          id="password"
           label="Password"
-          variant="outlined"
           type={showPassword ? "text" : "password"}
+          variant="outlined"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          fullWidth
+          required
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  edge="end"
-                >
+                <IconButton onClick={() => setShowPassword((prev) => !prev)}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             ),
           }}
-          sx={{ width: "220px" }}
         />
+
         <TextField
-          id="bio"
           label="Bio"
           variant="outlined"
           value={bio}
           onChange={(e) => setBio(e.target.value)}
+          fullWidth
         />
+
         <Button
           variant="contained"
           color="primary"
           onClick={handleSubmit}
-          sx={{ marginLeft: "130px" }}
-        >
-          Signup
-        </Button>
-        <Box>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && (
-            <div>
-              {" "}
-              <p style={{ color: "green" }}>{success}</p>{" "}
-              <Button variant="outlined" color="success" sx={{ mt: 1 }}>
-                Go to login
-              </Button>
-            </div>
-          )}
-        </Box>
-        <Box
+          fullWidth
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            fontWeight: "bold",
+            textTransform: "none",
+            ":hover": { backgroundColor: "#1976d2" },
           }}
         >
-          <Typography variant="h6">Already Registered?</Typography>
+          Sign Up
+        </Button>
+
+        <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
+          <Typography variant="body2" mr={1}>
+            Already registered?
+          </Typography>
           <Button
             variant="contained"
-            color="primary"
             onClick={() => router.push("/login")}
+            sx={{ fontWeight: "bold",  color: "#FFFFFFFF" }}
           >
-            Login page
+            Login
           </Button>
         </Box>
       </Box>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 }

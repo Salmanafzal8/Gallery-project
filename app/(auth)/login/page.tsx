@@ -55,15 +55,15 @@ export default function Login() {
       }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        console.error("❌ Axios Error:", err.response?.data || err.message);
+        console.error(" Axios Error:", err.response?.data || err.message);
         setError(
           err.response?.data?.message || "Login failed. Please try again."
         );
       } else if (err instanceof Error) {
-        console.error("❌ General Error:", err.message);
+        console.error(" General Error:", err.message);
         setError("Login error. Please try again later.");
       } else {
-        console.error("❌ Unknown Error:", err);
+        console.error("Unknown Error:", err);
         setError("An unknown error occurred.");
       }
     }

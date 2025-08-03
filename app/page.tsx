@@ -14,7 +14,7 @@ export default function HomePage() {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        backgroundImage: 'url("/signupbackgroundimage.jpg")', 
+        backgroundImage: 'url("/backgroundimage.jpg")', // ✅ Fixed background image
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -26,55 +26,76 @@ export default function HomePage() {
       <Typography
         variant="h3"
         sx={{
-          color: "white",
+          color: "#fff",
           fontWeight: "bold",
           mb: 3,
-          textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+          textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
         }}
       >
-        Welcome to the Next.js Image Uploader
+        Welcome to ImageVerse
       </Typography>
 
       <Box
         sx={{
-          width: { xs: 150, sm: 200, md: 250 },
-          height: { xs: 150, sm: 200, md: 250 },
-          backgroundImage: 'url("/next.svg")',
+          width: { xs: 180, sm: 250, md: 300 },
+          height: { xs: 180, sm: 250, md: 300 },
+          backgroundImage: 'url("/PROJECTLOGO.svg")', // ✅ Fixed logo filename
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          mb: 3,
+          mb: 4,
         }}
       />
 
       <Typography
         variant="h6"
         sx={{
-          color: "white",
-          mb: 3,
-          textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
+          color: "#f0f0f0",
+          mb: 4,
+          maxWidth: 500,
+          textShadow: "1px 1px 3px rgba(0,0,0,0.4)",
         }}
       >
-        Register to upload and manage your images
+        Upload, explore, and manage your pictures. Join our image-sharing
+        community now!
       </Typography>
 
-      <Box sx={{ display: "flex", gap: 2 }}>
-                <Button
+      <Box sx={{ display: "flex", gap: 3 }}>
+        <Button
           variant="contained"
-          color="primary"
           onClick={() => router.push("/signup")}
+          sx={{
+            px: 4,
+            py: 1.2,
+            fontWeight: 600,
+            backgroundColor: "#1976d2",
+            "&:hover": {
+              backgroundColor: "#155fa0",
+            },
+            borderRadius: "12px",
+            boxShadow: 2,
+          }}
         >
           Sign Up
         </Button>
+
         <Button
           variant="contained"
-          color="secondary"
           onClick={() => router.push("/login")}
+          sx={{
+            px: 4,
+            py: 1.2,
+            fontWeight: 600,
+            backgroundColor: "#9c27b0",
+            "&:hover": {
+              backgroundColor: "#7b1fa2",
+            },
+            borderRadius: "12px",
+            boxShadow: 2,
+          }}
         >
           Login
         </Button>
-
-
       </Box>
     </Box>
   );
