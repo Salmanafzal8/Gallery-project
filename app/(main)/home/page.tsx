@@ -1,12 +1,20 @@
 "use client";
-import { TextField, Box, Button, Typography } from "@mui/material";
+
+import {
+  TextField,
+  Box,
+  Button,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  useTheme,
+} from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import Layout from "../../layout";
-
-import Contactus from "../contactus/page";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 
 export default function Home() {
   const [caption, setCaption] = useState("");
@@ -18,6 +26,8 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
+  const observer = useRef<IntersectionObserver | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     fetchPosts(1);
@@ -25,7 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (!token) router.push("/login");
+    if (!token) router.push("/auth/login");
   }, []);
 
   useEffect(() => {
@@ -78,7 +88,6 @@ export default function Home() {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/feed?page=${currentPage}&limit=10`
       );
-      console.log("RESPONSE: ", response);
       const newPosts = response.data;
       setHasMore(newPosts.length === 10);
       setPosts((prev) => [...prev, ...newPosts]);
@@ -87,183 +96,163 @@ export default function Home() {
     }
   };
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchPosts(nextPage);
-  };
+  const lastPostRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (observer.current) observer.current.disconnect();
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    router.push("/login");
-  };
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          const nextPage = page + 1;
+          setPage(nextPage);
+          fetchPosts(nextPage);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [hasMore, page]
+  );
 
   return (
-    <Layout>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundImage: 'url("/backgroundimage.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        px: { xs: 2, md: 6 },
+        py: 4,
+      }}
+    >
+      {/* Title */}
+      <Typography
+        variant="h4"
+        align="center"
+        color="white"
+        fontWeight="bold"
+        mb={4}
+      >
+        Share a Moment
+      </Typography>
+
+      {/* Upload Form */}
       <Box
         sx={{
-          minHeight: "100vh",
-          backgroundImage: 'url("/backgroundimage.jpg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          px: { xs: 2, md: 6 },
-          py: 4,
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          padding: 4,
+          borderRadius: 4,
+          maxWidth: 500,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          boxShadow: 4,
         }}
       >
-        <Typography
-          variant="h4"
-          align="center"
-          color="white"
-          fontWeight="bold"
-          mb={4}
-        >
-          Share a Moment ✨
+        <Typography variant="h6" fontWeight="bold" textAlign="center">
+          Upload a Photo with Caption
         </Typography>
-        <Button onClick={handleLogout}>LOGOUT</Button>
-        {/* Upload Box */}
-        <Contactus />
-        <Box
-          sx={{
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-            padding: 4,
-            borderRadius: 4,
-            maxWidth: 500,
-            margin: "0 auto",
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            boxShadow: 4,
-          }}
+
+        <Button
+          component="label"
+          variant="contained"
+          color="primary"
+          startIcon={<CloudUploadIcon />}
+          sx={{ textTransform: "none", fontWeight: "bold" }}
         >
-          <Typography variant="h6" fontWeight="bold" textAlign="center">
-            Upload a Photo with Caption
-          </Typography>
+          Choose Photo
+          <input type="file" hidden onChange={handleInputChange} />
+        </Button>
 
-          <Button
-            component="label"
-            variant="contained"
-            color="primary"
-            startIcon={<CloudUploadIcon />}
-            sx={{ textTransform: "none", fontWeight: "bold" }}
-          >
-            Choose Photo
-            <input type="file" hidden onChange={handleInputChange} />
-          </Button>
-          {preview && (
-            <Box
-              component="img"
-              src={preview}
-              alt="Preview"
-              sx={{
-                width: "100%",
-                height: "auto",
-                maxHeight: 250,
-                objectFit: "cover",
-                borderRadius: 2,
-              }}
-            />
-          )}
-
-          <TextField
-            label="Caption"
-            variant="outlined"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            fullWidth
+        {preview && (
+          <Box
+            component="img"
+            src={preview}
+            alt="Preview"
+            sx={{
+              width: "100%",
+              height: 200,
+              objectFit: "cover",
+              borderRadius: 2,
+            }}
           />
+        )}
 
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            fullWidth
-            sx={{ fontWeight: "bold", textTransform: "none" }}
-          >
-            Upload
-          </Button>
+        <TextField
+          label="Caption"
+          variant="outlined"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          fullWidth
+        />
 
-          {message && (
-            <Typography variant="body2" align="center" color="secondary">
-              {message}
-            </Typography>
-          )}
-        </Box>
-
-        {/* Posts Section */}
-        <Box
-          sx={{
-            mt: 6,
-            maxWidth: 700,
-            mx: "auto",
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-          }}
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          fullWidth
+          sx={{ fontWeight: "bold", textTransform: "none" }}
         >
-          {posts.map((post) => (
-            <Box
-              key={post.id}
-              sx={{
-                backgroundColor: "#fff",
-                padding: 3,
-                borderRadius: 3,
-                boxShadow: 2,
-              }}
-            >
-              <Typography
-                variant="h3"
-                color="black"
-                sx={{ fontWeight: "bold" }}
-              >
-                {post.username}
-              </Typography>
-              <Box
-                component="img"
-                src={`${process.env.NEXT_PUBLIC_MEDIA_URL}/uploads/${post.filename}`}
-                alt={post.caption}
-                sx={{
-                  width: "100%",
-                  maxHeight: 350,
-                  objectFit: "cover",
-                  borderRadius: 2,
-                  mt: 1,
-                }}
-              />
-              <Typography
-                variant="h5"
-                mt={1}
-                sx={{
-                  background: "black",
-                  color: "white",
-                  borderRadius: "10px",
-                  padding: "5px",
-                }}
-              >
-                Caption
-              </Typography>
-              <Typography variant="h4" mt={1}>
-                {post.caption}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
+          Upload
+        </Button>
 
-        {hasMore && (
-          <Box display="flex" justifyContent="center" mt={4}>
-            <Button
-              variant="outlined"
-              // onClick={handleLoadMore}
-              onScroll={handleLoadMore}
-              sx={{
-                textTransform: "none",
-                fontWeight: "bold",
-                ":hover": { backgroundColor: "#e3f2fd" },
-              }}
-            >
-              Load More
-            </Button>
-          </Box>
+        {message && (
+          <Typography variant="body2" align="center" color="secondary">
+            {message}
+          </Typography>
         )}
       </Box>
-    </Layout>
+
+      <Box sx={{ mt: 6 }}>
+        <Grid container spacing={4} justifyContent="center">
+          {posts.map((post, index) => {
+            const isLast = index === posts.length - 1;
+            return (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                key={post.id}
+                ref={isLast ? lastPostRef : null}
+              >
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={`${process.env.NEXT_PUBLIC_MEDIA_URL}/uploads/${post.filename}`}
+                    alt={post.caption}
+                  />
+                  <CardContent>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Posted by: {post.username}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 1,
+                        background: "black",
+                        color: "white",
+                        p: 1,
+                        borderRadius: 1,
+                      }}
+                    >
+                      {" "}
+                      <Typography variant="h6">Capiton:</Typography>
+                      {post.caption}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Box>
+    </Box>
   );
 }

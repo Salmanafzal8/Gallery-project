@@ -16,10 +16,10 @@ export default function AboutPage() {
         <Divider sx={{ mb: 3 }} />
 
         <Typography variant="body1" fontSize={18} color="text.secondary">
-          Welcome to our Image Sharing App! 📸<br /><br />
+          Welcome to our Image Sharing App! <br /><br />
           This platform allows users to upload images with captions, view public posts, and manage their profile.
-          Its built with ❤️ using <strong>Next.js</strong> and <strong>Material UI</strong> to provide a clean and user-friendly experience.<br /><br />
-          We believe in simple, fast, and secure sharing. Whether its a memory, moment, or message — share it with the world!
+          Its built with using <strong>Next.js</strong> and <strong>Material UI</strong> to provide a clean and user-friendly experience.<br /><br />
+          We believe in simple, fast, and secure sharing. Whether its a memory, moment, or message share it with the world!
         </Typography>
       </Paper>
     </Container>

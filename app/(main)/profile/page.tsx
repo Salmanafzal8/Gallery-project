@@ -14,22 +14,27 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Layout from "../../layout";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function Profile() {
   const router = useRouter();
-  const [user, setUser] = useState<{ id: number; username: string; bio: string } | null>(null);
+  const [user, setUser] = useState<{
+    id: number;
+    username: string;
+    bio: string;
+  } | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [posts, setPosts] = useState<any[]>([]);
   const [editingPostId, setEditingPostId] = useState<number | null>(null);
   const [editedCaption, setEditedCaption] = useState<string>("");
 
   useEffect(() => {
-     fetchUserData();
-     fetchPosts();
+    fetchUserData();
+    fetchPosts();
   }, []);
 
   const fetchUserData = async () => {
-    const userID = localStorage.getItem("userID"); // fixed
+    const userID = localStorage.getItem("userId"); // fixed
     const token = localStorage.getItem("authToken");
     if (!token) {
       router.push("/login");
@@ -46,14 +51,14 @@ export default function Profile() {
         }
       );
       setUser(response.data);
-      console.log(user)
+      console.log(user);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
   const fetchPosts = async () => {
     try {
-      const userId = localStorage.getItem("userID");
+      const userId = localStorage.getItem("userId");
       if (!userId) return;
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/photos/user/${userId}`
@@ -75,9 +80,11 @@ export default function Profile() {
           },
         }
       );
+      toast.success("Photo deleted succesfully");
       fetchPosts();
     } catch (error) {
       console.error("Server error while deleting", error);
+      toast.error("Failed to delete Photo");
     }
   };
 
@@ -95,10 +102,12 @@ export default function Profile() {
           },
         }
       );
+      toast.success("Photo Edited succesfully");
       setEditingPostId(null);
       fetchPosts();
     } catch (error) {
       console.error("Error updating caption:", error);
+      toast.error("Failed to update caption ");
     }
   };
 
@@ -110,16 +119,21 @@ export default function Profile() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          bgcolor: "#f0f2f5",
+          justifyContent: "center",
+          minHeight: "100vh",
+          backgroundImage: 'url("/backgroundimage.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          px: 2,
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          👤 {user?.username}s Profile
+        <Typography variant="h4" color="white" gutterBottom>
+          Profile: {user?.username}
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant="subtitle1" color="white" gutterBottom>
+          Bio:{"    "}
           {user?.bio}
         </Typography>
-
         <Box
           sx={{
             display: "grid",
@@ -198,6 +212,7 @@ export default function Profile() {
           ))}
         </Box>
       </Box>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Layout>
   );
 }
